@@ -37,6 +37,8 @@ public:
 
     bool isDataValid();
 
+    SolarChargerProvider* getProvider() const { return _upProvider.get(); }
+
 private:
     void loop();
 
