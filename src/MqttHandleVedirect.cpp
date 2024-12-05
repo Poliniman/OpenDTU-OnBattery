@@ -7,6 +7,7 @@
 #include "MessageOutput.h"
 #include "SolarChargerProvider.h"
 #include "SolarCharger.h"
+#include "VictronMppt.h"
 
 MqttHandleVedirectClass MqttHandleVedirect;
 
@@ -40,6 +41,12 @@ void MqttHandleVedirectClass::loop()
         return;
     }
 
+    auto victronMppt = static_cast<VictronMppt*>(SolarCharger.getProvider());
+
+    if (!victronMppt) {
+        return;
+    }
+
     if ((millis() >= _nextPublishFull) || (millis() >= _nextPublishUpdatesOnly)) {
         // determine if this cycle should publish full values or updates only
         if (_nextPublishFull <= _nextPublishUpdatesOnly) {
@@ -57,8 +64,8 @@ void MqttHandleVedirectClass::loop()
         }
         #endif
 
-        for (int idx = 0; idx < SolarCharger.controllerAmount(); ++idx) {
-            std::optional<VeDirectMpptController::data_t> optMpptData = SolarCharger.getData(idx);
+        for (int idx = 0; idx < victronMppt->controllerAmount(); ++idx) {
+            std::optional<VeDirectMpptController::data_t> optMpptData = victronMppt->getData(idx);
             if (!optMpptData.has_value()) { continue; }
 
             auto const& kvFrame = _kvFrames[optMpptData->serialNr_SER];

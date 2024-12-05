@@ -370,8 +370,8 @@ float PowerLimiterClass::getBatteryVoltage(bool log) {
     if (inverter.first > 0) { res = inverter.first; }
 
     float chargeControllerVoltage = -1;
-    if (SolarCharger.isDataValid()) {
-        res = chargeControllerVoltage = static_cast<float>(SolarCharger.getOutputVoltage());
+    if (SolarCharger.getStats()->isOuputVoltageValid()) {
+        res = chargeControllerVoltage = static_cast<float>(SolarCharger.getStats()->getOutputVoltage());
     }
 
     float bmsVoltage = -1;
@@ -425,8 +425,8 @@ void PowerLimiterClass::fullSolarPassthrough(PowerLimiterClass::Status reason)
 
     uint16_t targetOutput = 0;
 
-    if (SolarCharger.isDataValid()) {
-        targetOutput = static_cast<uint16_t>(std::max<int32_t>(0, SolarCharger.getOutputPowerWatts()));
+    if (SolarCharger.getStats()->isOutputPowerWattsValid()) {
+        targetOutput = static_cast<uint16_t>(std::max<int32_t>(0, SolarCharger.getStats()->getOutputPowerWatts()));
         targetOutput = dcPowerBusToInverterAc(targetOutput);
     }
 
@@ -678,11 +678,11 @@ uint16_t PowerLimiterClass::getSolarPassthroughPower()
 
     if (!config.PowerLimiter.SolarPassThroughEnabled
             || isBelowStopThreshold()
-            || !SolarCharger.isDataValid()) {
+            || !SolarCharger.getStats()->isOutputPowerWattsValid()) {
         return 0;
     }
 
-    return SolarCharger.getOutputPowerWatts();
+    return SolarCharger.getStats()->getOutputPowerWatts();
 }
 
 float PowerLimiterClass::getBatteryInvertersOutputAcWatts()

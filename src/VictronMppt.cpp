@@ -69,6 +69,35 @@ void VictronMppt::loop()
     }
 }
 
+std::shared_ptr<SolarChargerStats> VictronMppt::getStats()
+{
+    _stats->_isOuputVoltageValid = _stats->_isOutputPowerWattsValid = _stats->_isPanelPowerWattsValid = isDataValid();
+    _stats->_dataAgeMillis = getDataAgeMillis();
+    _stats->_outputVoltage = getOutputVoltage();
+    _stats->_outputPowerWatts = getOutputPowerWatts();
+    _stats->_panelPowerWatts = getPanelPowerWatts();
+    _stats->_yieldTotal = getYieldTotal();
+    _stats->_yieldDay = getYieldDay();
+
+    _stats->_controllerStats.clear();
+
+    for (const auto& upController : _controllers) {
+        if (!upController->isDataValid()) { continue; }
+
+        auto controllerStats = std::make_unique<VictronMpptStats::VictronMpptControllerStats>();
+        controllerStats->_dataAgeMillis = millis() - upController->getLastUpdate();
+        controllerStats->_outputPowerWatts = upController->getData().batteryOutputPower_W;
+        controllerStats->_panelPowerWatts = upController->getData().panelPower_PPV_W;
+        controllerStats->_yieldTotal = upController->getData().yieldTotal_H19_Wh / 1000.0;
+        controllerStats->_yieldDay = upController->getData().yieldToday_H20_Wh / 1000.0;
+        controllerStats->_outputVoltage = upController->getData().batteryVoltage_V_mV / 1000.0;
+
+        _stats->_controllerStats.push_back(controllerStats);
+    }
+
+    return _stats;
+}
+
 /*
  * isDataValid()
  * return: true = if at least one of the MPPT controllers delivers valid data

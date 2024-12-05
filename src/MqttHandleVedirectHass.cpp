@@ -12,6 +12,7 @@
 #include "Utils.h"
 #include "__compiled_constants.h"
 #include "SolarCharger.h"
+#include "VictronMppt.h"
 
 MqttHandleVedirectHassClass MqttHandleVedirectHass;
 
@@ -57,9 +58,15 @@ void MqttHandleVedirectHassClass::publishConfig()
         return;
     }
 
+    auto victronMppt = static_cast<VictronMppt*>(SolarCharger.getProvider());
+
+    if (!victronMppt) {
+        return;
+    }
+
     // device info
-    for (int idx = 0; idx < SolarCharger.controllerAmount(); ++idx) {
-        auto optMpptData = SolarCharger.getData(idx);
+    for (int idx = 0; idx < victronMppt->controllerAmount(); ++idx) {
+        auto optMpptData = victronMppt->getData(idx);
         if (!optMpptData.has_value()) { continue; }
 
         publishSensor("MPPT serial number", "mdi:counter", "SER", nullptr, nullptr, nullptr, *optMpptData);

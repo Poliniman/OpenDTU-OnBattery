@@ -6,6 +6,7 @@
 #include <TaskSchedulerDeclarations.h>
 
 #include "SolarChargerProvider.h"
+#include "SolarChargerStats.h"
 #include "VeDirectMpptController.h"
 #include "Configuration.h"
 
@@ -18,30 +19,32 @@ public:
     void deinit() final;
     void loop() final;
 
-    bool isDataValid() const final;
+    std::shared_ptr<SolarChargerStats> getStats() final;
+
+    bool isDataValid() const;
 
     // returns the data age of all controllers,
     // i.e, the youngest data's age is returned.
-    uint32_t getDataAgeMillis() const final;
-    uint32_t getDataAgeMillis(size_t idx) const final;
+    uint32_t getDataAgeMillis() const;
+    uint32_t getDataAgeMillis(size_t idx) const;
 
-    size_t controllerAmount() const final { return _controllers.size(); }
-    std::optional<VeDirectMpptController::data_t> getData(size_t idx = 0) const final;
+    size_t controllerAmount() const { return _controllers.size(); }
+    std::optional<VeDirectMpptController::data_t> getData(size_t idx = 0) const;
 
     // total output of all MPPT charge controllers in Watts
-    int32_t getOutputPowerWatts() const final;
+    int32_t getOutputPowerWatts() const;
 
     // total panel input power of all MPPT charge controllers in Watts
-    int32_t getPanelPowerWatts() const final;
+    int32_t getPanelPowerWatts() const;
 
     // sum of total yield of all MPPT charge controllers in kWh
-    float getYieldTotal() const final;
+    float getYieldTotal() const;
 
     // sum of today's yield of all MPPT charge controllers in kWh
-    float getYieldDay() const final;
+    float getYieldDay() const;
 
     // minimum of all MPPT charge controllers' output voltages in V
-    float getOutputVoltage() const final;
+    float getOutputVoltage() const;
 
     // returns the state of operation from the first available controller
     std::optional<uint8_t> getStateOfOperation() const;
@@ -67,4 +70,7 @@ private:
     std::vector<String> _serialPortOwners;
     bool initController(int8_t rx, int8_t tx, bool logging,
         uint8_t instance);
+
+    std::shared_ptr<VictronMpptStats> _stats =
+        std::make_shared<VictronMpptStats>();
 };

@@ -83,7 +83,7 @@ bool WebApiWsSolarChargerLiveClass::hasUpdate(size_t idx)
 uint16_t WebApiWsSolarChargerLiveClass::responseSize() const
 {
     // estimated with ArduinoJson assistant
-    return SolarCharger.controllerAmount() * (1024 + 512) + 128/*DPL status and structure*/;
+    return SolarCharger.getStats()->controllerAmount() * (1024 + 512) + 128/*DPL status and structure*/;
 }
 
 void WebApiWsSolarChargerLiveClass::sendDataTaskCb()
@@ -95,7 +95,7 @@ void WebApiWsSolarChargerLiveClass::sendDataTaskCb()
     bool fullUpdate = (millis() - _lastFullPublish > (10 * 1000));
     bool updateAvailable = false;
     if (!fullUpdate) {
-        for (size_t idx = 0; idx < SolarCharger.controllerAmount(); ++idx) {
+        for (size_t idx = 0; idx < SolarCharger.getStats()->controllerAmount(); ++idx) {
             if (hasUpdate(idx)) {
                 updateAvailable = true;
                 break;

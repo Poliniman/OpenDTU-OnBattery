@@ -72,16 +72,16 @@ void WebApiWsLiveClass::generateOnBatteryJsonResponse(JsonVariant& root, bool al
     auto const& config = Configuration.get();
     auto constexpr halfOfAllMillis = std::numeric_limits<uint32_t>::max() / 2;
 
-    auto solarChargerAge = SolarCharger.getDataAgeMillis();
+    auto solarChargerAge = SolarCharger.getStats()->getDataAgeMillis();
     if (all || (solarChargerAge > 0 && (millis() - _lastPublishSolarCharger) > solarChargerAge)) {
         auto solarchargerObj = root["solarcharger"].to<JsonObject>();
         solarchargerObj["enabled"] = config.SolarCharger.Enabled;
 
         if (config.SolarCharger.Enabled) {
             auto totalVeObj = solarchargerObj["total"].to<JsonObject>();
-            addTotalField(totalVeObj, "Power", SolarCharger.getPanelPowerWatts(), "W", 1);
-            addTotalField(totalVeObj, "YieldDay", SolarCharger.getYieldDay() * 1000, "Wh", 0);
-            addTotalField(totalVeObj, "YieldTotal", SolarCharger.getYieldTotal(), "kWh", 2);
+            addTotalField(totalVeObj, "Power", SolarCharger.getStats()->getPanelPowerWatts(), "W", 1);
+            addTotalField(totalVeObj, "YieldDay", SolarCharger.getStats()->getYieldDay() * 1000, "Wh", 0);
+            addTotalField(totalVeObj, "YieldTotal", SolarCharger.getStats()->getYieldTotal(), "kWh", 2);
         }
 
         if (!all) { _lastPublishSolarCharger = millis(); }
