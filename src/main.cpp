@@ -33,7 +33,7 @@
 #include "PowerMeter.h"
 #include "PowerLimiter.h"
 #include "defaults.h"
-#include <solarCharger/Controller.h>
+#include <solarcharger/Controller.h>
 #include <Arduino.h>
 #include <LittleFS.h>
 #include <SpiManager.h>

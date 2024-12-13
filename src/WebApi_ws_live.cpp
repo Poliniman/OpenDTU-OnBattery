@@ -11,7 +11,7 @@
 #include "Huawei_can.h"
 #include "PowerMeter.h"
 #include "defaults.h"
-#include <solarCharger/Controller.h>
+#include <solarcharger/Controller.h>
 #include <AsyncJson.h>
 
 WebApiWsLiveClass::WebApiWsLiveClass()

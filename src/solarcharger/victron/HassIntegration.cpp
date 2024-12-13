@@ -9,7 +9,7 @@
 #include "MessageOutput.h"
 #include "Utils.h"
 #include "__compiled_constants.h"
-#include <solarCharger/Controller.h>
+#include <solarcharger/Controller.h>
 #include <solarcharger/victron/HassIntegration.h>
 
 namespace SolarChargers::Victron {
